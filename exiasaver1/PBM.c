@@ -38,30 +38,31 @@ struct ArrRGB openPBM_PPM(char *path){
 				step=2;
 			}
 		}else{
-			char ignore[2096];
+			char ignore[2048];
 			fgets(ignore, sizeof(ignore), file);
 		}
 	}
 	while(step==2){
-		int x;
-		int k=fscanf(file, "%d", &x);
-		if(k==1){
-			ret.x=x;
-			ret.Arr=malloc(x*(sizeof(struct RGB*)));
-			fgetc(file);
-			step=3;
-		}else{
-			char ignore[2096];
-			fgets(ignore, sizeof(ignore), file);
-		}			
-	}
-	while(step==3){
 		int y;
 		int k=fscanf(file, "%d", &y);
 		if(k==1){
 			ret.y=y;
+			//ret.Arr=malloc(y*(sizeof(struct RGB*)));
+			fgetc(file);
+			step=3;
+		}else{
+			char ignore[2048];
+			fgets(ignore, sizeof(ignore), file);
+		}			
+	}
+	while(step==3){
+		int x;
+		int k=fscanf(file, "%d", &x);
+		if(k==1){
+			ret.x=x;
+			ret.Arr=malloc(x*sizeof(struct RGB*));
 			for(int i=0; i<ret.x; i++){
-				ret.Arr[i]=malloc(y*(sizeof(struct RGB)));
+				ret.Arr[i]=malloc(ret.y*(sizeof(struct RGB)));
 			}
 			fgetc(file);
 			step=5;
@@ -73,7 +74,7 @@ struct ArrRGB openPBM_PPM(char *path){
 			if(k==1){
 				step=6;
 			}else{
-				char ignore[2096];
+				char ignore[2048];
 				fgets(ignore, sizeof(ignore), file);
 			}
 		}else{
@@ -88,36 +89,36 @@ struct ArrRGB openPBM_PPM(char *path){
 		while(fscanf(file, "%d", &value)>0){
 			if(ret.type==1){
 				if(value==1){
-					ret.Arr[indeY][indeX].R=0;
-					ret.Arr[indeY][indeX].G=0;
-					ret.Arr[indeY][indeX].B=0;
+					ret.Arr[indeX][indeY].R=0;
+					ret.Arr[indeX][indeY].G=0;
+					ret.Arr[indeX][indeY].B=0;
 				}else{
-					ret.Arr[indeY][indeX].R=255;
-					ret.Arr[indeY][indeX].G=255;
-					ret.Arr[indeY][indeX].B=255;
+					ret.Arr[indeX][indeY].R=255;
+					ret.Arr[indeX][indeY].G=255;
+					ret.Arr[indeX][indeY].B=255;
 				}
 					
-				indeX++;
+				indeY++;
 			}
 			if(ret.type==2){
 				int inG=0;
 				if(inG==0&&_step==0){ret.Arr[indeX][indeY].R=value*255/rgbres;inG=1;_step=1;}
 				if(inG==0&&_step==1){ret.Arr[indeX][indeY].G=value*255/rgbres;inG=1;_step=2;}
-				if(inG==0&&_step==2){ret.Arr[indeX][indeY].B=value*255/rgbres;inG=1;_step=0;indeX++;}
+				if(inG==0&&_step==2){ret.Arr[indeX][indeY].B=value*255/rgbres;inG=1;_step=0;indeY++;}
 			}
 			if(ret.type==3){
-				ret.Arr[indeY][indeX].R=value;
-				indeX++;
+				ret.Arr[indeX][indeY].R=value;
+				indeY++;
 			}
 			fgetc(file);
-			if(indeX==ret.x){
-				indeY++;
-				indeX=0;
+			if(indeY==ret.y){
+				indeX++;
+				indeY=0;
 			}
 		}
-		char ignore[2096];
+		char ignore[2048];
 		fgets(ignore, sizeof(ignore), file);
-		if(indeY==ret.y){//strlen(ignore)==14){
+		if(indeX==ret.x){
 			step=7;
 		}
 	}
@@ -128,8 +129,8 @@ struct ArrRGB openPBM_PPM(char *path){
 
 struct ArrRGB ScreenSizePBM_PPM(struct ArrRGB image, int sizeX, int sizeY, int CSGX, int CSGY){
 	 struct ArrRGB screen;
-	 screen.x=sizeY;
-	 screen.y=sizeX;
+	 screen.x=sizeX;
+	 screen.y=sizeY;
 	 screen.Arr=malloc(sizeX*sizeof(struct RGB*));
 	 for(int i=0; i<sizeX; i++){
 		 screen.Arr[i]=malloc(sizeY*sizeof(struct RGB));
@@ -142,8 +143,7 @@ struct ArrRGB ScreenSizePBM_PPM(struct ArrRGB image, int sizeX, int sizeY, int C
 	 screen.type=10+image.type;
 	 for(int i=0; i<image.x; i++){
 		 for(int j=0; j<image.y; j++){
-			 if(image.type==2){screen.Arr[CSGX+i][CSGY+j]=image.Arr[i][j];}
-			 if(image.type==1){screen.Arr[CSGX+i][CSGY+j]=image.Arr[j][i];}
+			 screen.Arr[CSGX+i][CSGY+j]=image.Arr[i][j];
 		 }
 	 }
 	 return screen;
@@ -153,7 +153,7 @@ int printPBM_PPM(struct ArrRGB screen){
 	 for(int i=0; i<screen.x; i++){
 		 for(int j=0; j<screen.y; j++){
 			 if(screen.type==12||screen.type==2||screen.type==11||screen.type==1){
-				 printf("\x1b[38;2;%d;%d;%dm%s\x1b[0m", screen.Arr[j][i].R, screen.Arr[j][i].G, screen.Arr[j][i].B, "█");
+				 printf("\x1b[38;2;%d;%d;%dm%s\x1b[0m", screen.Arr[i][j].R, screen.Arr[i][j].G, screen.Arr[i][j].B, "█");
 			 }
 			 if(screen.type==13||screen.type==3){
 				 int color=screen.Arr[i][j].R;
@@ -169,9 +169,7 @@ int printPBM_PPM(struct ArrRGB screen){
 struct ArrRGB AppendImagePBM_PPM(struct ArrRGB background, struct ArrRGB image, int CSGX, int CSGY){
  for(int i=0; i<image.x; i++){
 	 for(int j=0; j<image.y; j++){
-		 if(image.type==2){background.Arr[CSGX+i][CSGY+j]=image.Arr[i][j];}
-		 if(image.type==1){background.Arr[CSGX+i][CSGY+j]=image.Arr[j][i];}
-		 if(image.type==3){background.Arr[CSGX+i][CSGY+j]=image.Arr[i][j];}
+		 background.Arr[CSGX+i][CSGY+j]=image.Arr[i][j];
 	 }
  }
  return background;
