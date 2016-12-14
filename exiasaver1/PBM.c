@@ -20,74 +20,61 @@ struct ArrRGB openPBM_PPM(char *path){
 	if(file==NULL){ret.type=-1;return ret;}
 	char *line=malloc(512*sizeof(char));
 	if(line==NULL){ret.type=-2;return ret;}
-	int step=-1;
+	int step=0;
 	int rgbres=255;
-	while(step==-1){
-		int k=fscanf(file, "#%s\n", line);
-		if(k==0){step=0;}
-	}
 	while(step==0){
 		int k=fscanf(file, "%s\n", line);
 		if(k==1){
 			if(strcmp(line, "P1")==0){
 				ret.type=1;
-				step=1;
+				step=2;
 			}
 			if(strcmp(line, "P3")==0){
 				ret.type=2;
-				step=1;
+				step=2;
 			}
 			if(strcmp(line, "P4")==0){
 				ret.type=3;
-				step=1;
+				step=2;
 			}
+		}else{
+			char ignore[2096];
+			fgets(ignore, sizeof(ignore), file);
 		}
 	}
-	while(step==1){
-		int k=fscanf(file, "#%s\n", line);
-		if(k==0){step=2;}
-	}
 	while(step==2){
-		//printf("getting coords\n");
 		int x;
 		int k=fscanf(file, "%d", &x);
-		//printf("%d\n", k);
 		if(k==1){
-			//printf("size==%d\n", x);
 			ret.x=x;
 			ret.Arr=malloc(x*(sizeof(struct RGB*)));
 			fgetc(file);
-			//for(int i=0;i<x;i++){
-			//	ret.Arr[i]=malloc(y*(sizeof(struct RGB)+1));
-			//}
-			//ret.y=y;
-			//printf("got coords\n");
 			step=3;
-		}
+		}else{
+			char ignore[2096];
+			fgets(ignore, sizeof(ignore), file);
+		}			
 	}
 	while(step==3){
 		int y;
 		int k=fscanf(file, "%d", &y);
-		//printf("%d\n", k);
 		if(k==1){
-			//printf("other size==%d\n", y);
 			ret.y=y;
 			for(int i=0; i<ret.x; i++){
 				ret.Arr[i]=malloc(y*(sizeof(struct RGB)));
 			}
 			fgetc(file);
-			step=4;
+			step=5;
 		}
-	}
-	while(step==4){
-		int k=fscanf(file, "#%s\n", line);
-		if(k==0){step=5;}
 	}
 	while(step==5){
 		if(ret.type==2){
 			int k=fscanf(file, "%d\n", &rgbres);
 			if(k==1){
 				step=6;
+			}else{
+				char ignore[2096];
+				fgets(ignore, sizeof(ignore), file);
 			}
 		}else{
 			step=6;
@@ -98,7 +85,6 @@ struct ArrRGB openPBM_PPM(char *path){
 		int _step=0;
 		int indeX=0;
 		int indeY=0;
-		while(fscanf(file, "#%s\n", line)>0){}
 		while(fscanf(file, "%d", &value)>0){
 			if(ret.type==1){
 				if(value==1){
@@ -129,7 +115,11 @@ struct ArrRGB openPBM_PPM(char *path){
 				indeX=0;
 			}
 		}
-		step=7;
+		char ignore[2096];
+		fgets(ignore, sizeof(ignore), file);
+		if(indeY==ret.y){//strlen(ignore)==14){
+			step=7;
+		}
 	}
 	if(step==7){
 		return ret;
@@ -150,28 +140,18 @@ struct ArrRGB ScreenSizePBM_PPM(struct ArrRGB image, int sizeX, int sizeY, int C
 		 }
 	 }
 	 screen.type=10+image.type;
-	 //printf("haya\n");
 	 for(int i=0; i<image.x; i++){
 		 for(int j=0; j<image.y; j++){
-			 //printf("screen{%d,%d}(%d,%d)=image{%d,%d}(%d,%d)\n", screen.x, screen.y, CSGX+i, CSGY+j, image.x, image.y, i, j);
-			 //printf("image[%d,%d,%d]\n", image.Arr[i][j].R, image.Arr[i][j].G, image.Arr[i][j].B);
 			 if(image.type==2){screen.Arr[CSGX+i][CSGY+j]=image.Arr[i][j];}
 			 if(image.type==1){screen.Arr[CSGX+i][CSGY+j]=image.Arr[j][i];}
-			 //printf("halala %d \n", j);
 		 }
-		 //printf("hololo %d\n", i);
 	 }
 	 return screen;
  }
  
 int printPBM_PPM(struct ArrRGB screen){
-	 //system("clear");
 	 for(int i=0; i<screen.x; i++){
 		 for(int j=0; j<screen.y; j++){
-			 /*if(screen.type==11||screen.type==1){
-				 //printf("%d", screen.Arr
-				 if(screen.Arr[i][j].R==0){printf(/*"\x1b[38;2;255;255;255m%s\x1b[0m*\/"█"/*\x1b[0m"*\/);}else{printf(" ");}
-			 }*/
 			 if(screen.type==12||screen.type==2||screen.type==11||screen.type==1){
 				 printf("\x1b[38;2;%d;%d;%dm%s\x1b[0m", screen.Arr[j][i].R, screen.Arr[j][i].G, screen.Arr[j][i].B, "█");
 			 }
