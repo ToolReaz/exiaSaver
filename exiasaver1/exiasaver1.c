@@ -10,6 +10,10 @@ int main(int argc, char *argv[]){
 	if(argc==1){
 		image=openPBM_PPM(argv[0]);
 		if(fork()==0){
+			struct RGB background;
+			background.R=127;
+			background.G=127;
+			background.B=127;
 			struct ArrRGB sized = ScreenSizePBM_PPM(image, 24, 80, 12-image.x/2, 40-image.y/2);
 			printPBM_PPM(sized);
 		}else{

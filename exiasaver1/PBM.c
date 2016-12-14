@@ -127,7 +127,7 @@ struct ArrRGB openPBM_PPM(char *path){
 	}
 }
 
-struct ArrRGB ScreenSizePBM_PPM(struct ArrRGB image, int sizeX, int sizeY, int CSGX, int CSGY){
+struct ArrRGB ScreenSizePBM_PPM(struct ArrRGB image, int sizeX, int sizeY, int CSGX, int CSGY, struct RGB back){
 	 struct ArrRGB screen;
 	 screen.x=sizeX;
 	 screen.y=sizeY;
@@ -135,9 +135,7 @@ struct ArrRGB ScreenSizePBM_PPM(struct ArrRGB image, int sizeX, int sizeY, int C
 	 for(int i=0; i<sizeX; i++){
 		 screen.Arr[i]=malloc(sizeY*sizeof(struct RGB));
 		 for(int j=0; j<sizeY; j++){
-			 screen.Arr[i][j].R=127;
-			 screen.Arr[i][j].G=127;
-			 screen.Arr[i][j].B=127;
+			 screen.Arr[i][j]=back;
 		 }
 	 }
 	 screen.type=10+image.type;
