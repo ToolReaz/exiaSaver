@@ -1,0 +1,6 @@
+#!/bin/bash
+export EXIASAVER2_PBM=~nbrs
+export EXIASAVER2_SLEEP=5
+export EXIASAVER2_TAILLE=3x5
+export EXIASAVER1_PBM=PBM-PPM
+export EXIASAVER3_PBM=Plane
