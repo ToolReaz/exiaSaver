@@ -153,10 +153,14 @@ int main (int argc, char *argv[]){
         printPBM_PPM(fs);
 
         printf("Cet écran sera actualisé dans quelques secondes ");
+        fflush(stdout);
+
+        //sleep(1);
 
         // Ajoute un '.' toutes les secondes pendant EXIASAVER2_SLEEP secondes0
         for (int k = 0; k < atoi(EXIASAVER2_SLEEP); k++) {
             printf(".");
+            fflush(stdout);
             sleep(1);
         }
 
