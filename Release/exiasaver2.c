@@ -17,6 +17,7 @@ int main (int argc, char *argv[]){
     // Récupère les variables d'environement
     // EXIASAVER2_PBM - Répertoire ou se trouvent tous les fichiers PBM @Défaut=.
     // EXIASAVER2_TAILLE - Taille affichage chiffres - @défaut=5x3
+    // EXIASAVER2_SLEEP - Temps en seconde entre chaques rafraichissements
     if(getenv("EXIASAVER2_PBM") == NULL){
         EXIASAVER2_PBM = "nbrs";
     }else{
