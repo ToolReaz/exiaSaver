@@ -26,6 +26,7 @@ int mod(int x, int y) {
 	}
 	if (x < 0) {
 		return y - ((-x) % y);
+	}
 }
 
 // Fonction: openPBM_PPM
