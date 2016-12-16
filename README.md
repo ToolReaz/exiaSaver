@@ -1,4 +1,4 @@
 # exiaSaver
 ScreenSaver développé en C pour terminal
 
-![alt tag](https://github.com/ToolReaz/exiaSaver/logo.PNG)
+![alt tag](https://github.com/ToolReaz/exiaSaver/blob/master/logo.PNG)
